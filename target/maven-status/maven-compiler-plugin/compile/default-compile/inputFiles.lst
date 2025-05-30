@@ -3,4 +3,8 @@
 /home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/config/ThymeleafConfig.java
 /home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/controller/AuthController.java
 /home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/controller/HomeController.java
+/home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/controller/OpenApiController.java
+/home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/controller/WebController.java
 /home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/service/AuthService.java
+/home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/service/ErpNextClientService.java
+/home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/service/OpenApiBuilderService.java
