@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Documentation API ERPNext</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .module-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            color: inherit;
+        }
+        .module-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        .module-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        .module-description {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        .module-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-outline-primary {
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-primary:hover {
+            background: #667eea;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            color: white;
+            text-align: center;
+        }
+        .stats-item {
+            display: inline-block;
+            margin: 0 2rem;
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .search-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 2rem;
+            display: block;
+        }
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .search-box:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-cogs"></i> Documentation API ERPNext</h1>
+            <p>Explorez et testez les APIs de vos modules ERPNext</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stats-item">
+                <span class="stats-number" th:text="${#lists.size(modules)}">0</span>
+                <span class="stats-label">Modules disponibles</span>
+            </div>
+            <div class="stats-item">
+                <span class="stats-number">REST</span>
+                <span class="stats-label">API Type</span>
+            </div>
+            <div class="stats-item">
+                <span class="stats-number">OpenAPI 3.0</span>
+                <span class="stats-label">Spécification</span>
+            </div>
+        </div>
+
+        <input type="text" id="searchBox" class="search-box" placeholder="🔍 Rechercher un module...">
+
+        <div class="module-grid" id="moduleGrid">
+            <div th:each="module : ${modules}" class="module-card" th:data-module="${module}">
+                <div class="module-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <div class="module-title" th:text="${module}">Module Name</div>
+                <div class="module-description">
+                    Explorez les APIs disponibles pour ce module et testez les endpoints REST.
+                </div>
+                <div class="module-actions">
+                    <a th:href="@{'/api-docs/module/' + ${module}}" class="btn btn-primary">
+                        <i class="fas fa-book"></i> Documentation
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <div class="stats-bar">
+                <h5 style="margin-bottom: 1rem;">APIs Disponibles</h5>
+                <div class="row text-center">
+                    <div class="col-md-2">
+                        <i class="fas fa-list fa-2x mb-2"></i>
+                        <div>GET All</div>
+                    </div>
+                    <div class="col-md-2">
+                        <i class="fas fa-eye fa-2x mb-2"></i>
+                        <div>GET by ID</div>
+                    </div>
+                    <div class="col-md-2">
+                        <i class="fas fa-plus fa-2x mb-2"></i>
+                        <div>POST Create</div>
+                    </div>
+                    <div class="col-md-2">
+                        <i class="fas fa-edit fa-2x mb-2"></i>
+                        <div>PUT Update</div>
+                    </div>
+                    <div class="col-md-2">
+                        <i class="fas fa-trash fa-2x mb-2"></i>
+                        <div>DELETE</div>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="/api/openapi.yaml" class="text-white text-decoration-none">
+                            <i class="fas fa-download fa-2x mb-2"></i>
+                            <div>OpenAPI Spec</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fonctionnalité de recherche
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const moduleCards = document.querySelectorAll('.module-card');
+            
+            moduleCards.forEach(card => {
+                const moduleName = card.getAttribute('data-module').toLowerCase();
+                if (moduleName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.3s ease';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Animation au chargement
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.module-card');
+            cards.forEach((card, index) => {
+                card.style.animation = `slideInUp 0.6s ease ${index * 0.1}s both`;
+            });
+        });
+
+        // Ajout des animations CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

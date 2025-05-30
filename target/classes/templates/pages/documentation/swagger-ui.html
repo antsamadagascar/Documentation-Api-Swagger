@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Documentation API - Module ' + ${moduleName}">Documentation API - Module</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .header-title {
+            color: white;
+            margin: 0;
+        }
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .header-title p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .btn-custom {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        .module-info {
+            background: rgba(255, 255, 255, 0.95);
+            margin: 1rem auto;
+            max-width: 1200px;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .doctype-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .doctype-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .swagger-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        #swagger-ui {
+            max-width: none;
+        }
+        .swagger-ui .topbar {
+            display: none;
+        }
+        .swagger-ui .info {
+            margin: 20px 0;
+        }
+        .swagger-ui .scheme-container {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .auth-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>
+                    <i class="fas fa-book"></i>
+                    Documentation API - Module <span th:text="${moduleName}">Module</span>
+                </h1>
+                <p>Interface Swagger pour tester les endpoints REST</p>
+            </div>
+            <div class="header-actions">
+                <a href="/api-docs" class="btn-custom">
+                    <i class="fas fa-arrow-left"></i> Retour aux modules
+                </a>
+                <a th:href="@{'/api/openapi/' + ${moduleName} + '.yaml'}" class="btn-custom" target="_blank">
+                    <i class="fas fa-download"></i> Télécharger YAML
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="module-info">
+        <div class="auth-info">
+            <h5><i class="fas fa-shield-alt"></i> Information d'authentification</h5>
+            <p><strong>Important :</strong> Pour tester les endpoints, vous devez être connecté à ERPNext dans un autre onglet du même navigateur, ou utiliser l'authentification Bearer Token.</p>
+            <button class="btn btn-sm btn-primary" onclick="checkAuth()">
+                <i class="fas fa-check-circle"></i> Vérifier l'authentification
+            </button>
+        </div>
+        
+        <h3><i class="fas fa-info-circle"></i> Informations sur le module</h3>
+        <p>Ce module contient <strong th:text="${#lists.size(doctypes)}">0</strong> types de documents disponibles via l'API REST.</p>
+        
+        <h5>Types de documents disponibles :</h5>
+        <div class="doctype-list">
+            <span th:each="doctype : ${doctypes}" class="doctype-badge" th:text="${doctype}">DocType</span>
+        </div>
+        
+        <div class="mt-3">
+            <h5>Opérations disponibles pour chaque type :</h5>
+            <div class="row">
+                <div class="col-md-2 text-center">
+                    <i class="fas fa-list text-primary"></i><br>
+                    <small>GET /module/doctype</small><br>
+                    <strong>Lister tous</strong>
+                </div>
+                <div class="col-md-2 text-center">
+                    <i class="fas fa-eye text-info"></i><br>
+                    <small>GET /module/doctype/{id}</small><br>
+                    <strong>Voir détail</strong>
+                </div>
+                <div class="col-md-2 text-center">
+                    <i class="fas fa-plus text-success"></i><br>
+                    <small>POST /module/doctype</small><br>
+                    <strong>Créer</strong>
+                </div>
+                <div class="col-md-2 text-center">
+                    <i class="fas fa-edit text-warning"></i><br>
+                    <small>PUT /module/doctype/{id}</small><br>
+                    <strong>Modifier</strong>
+                </div>
+                <div class="col-md-2 text-center">
+                    <i class="fas fa-trash text-danger"></i><br>
+                    <small>DELETE /module/doctype/{id}</strong><br>
+                    <strong>Supprimer</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="swagger-container">
+        <div id="swagger-ui"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js"></script>
+    <script th:inline="javascript">
+        function checkAuth() {
+            fetch('/api/auth/check', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.authenticated) {
+                    alert(' Authentification OK - Utilisateur: ' + data.user);
+                } else {
+                    alert(' Non authentifié - Veuillez vous connecter à ERPNext');
+                }
+            })
+            .catch(error => {
+                alert(' Erreur lors de la vérification: ' + error.message);
+            });
+        }
+
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: /*[[${swaggerUrl}]]*/ '/api/openapi/module.yaml',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                validatorUrl: null,
+                tryItOutEnabled: true,
+                supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+                
+                // Configuration simplifiée - les cookies sont  gérés par le proxy Spring Boot
+                requestInterceptor: (request) => {
+                    console.log('Requête vers proxy Spring Boot:', request);
+                    return request;
+                },
+                
+                responseInterceptor: (response) => {
+                    console.log('Réponse du proxy:', response);
+                    if (response.status === 403) {
+                        console.warn('Erreur 403: Vérifiez votre authentification ERPNext');
+                    }
+                    return response;
+                },
+
+                onComplete: function() {
+                    console.log('Swagger UI chargé avec succès - Utilise le proxy Spring Boot');
+                },
+                
+                onFailure: function(data) {
+                    console.error('Erreur lors du chargement de Swagger UI:', data);
+                }
+            });
+        };
+    </script>
+</body>
+</html>

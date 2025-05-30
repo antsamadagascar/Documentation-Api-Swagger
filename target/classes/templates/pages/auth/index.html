@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - ERPNext</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            height: 48px;
+            width: auto;
+        }
+
+        .fallback-logo {
+            height: 48px;
+            width: 48px;
+            background: #4f46e5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .input {
+            padding: 12px 16px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .message-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 24px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+        }
+
+        /* Animation de chargement pour le bouton */
+        .btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 2;
+        }
+
+        .btn.loading span {
+            opacity: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Effet de focus amélioré */
+        .input:focus {
+            background: #fafbff;
+        }
+
+        /* Style pour les navigateurs webkit (Chrome, Safari) */
+        .input::-webkit-input-placeholder {
+            color: #9ca3af;
+        }
+
+        .input::-moz-placeholder {
+            color: #9ca3af;
+        }
+
+        .input:-ms-input-placeholder {
+            color: #9ca3af;
+        }
+
+        /* Amélioration de l'accessibilité */
+        .input:invalid {
+            border-color: #ef4444;
+        }
+
+        .input:invalid:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <img th:src="@{/logos/erpnext-logo.svg}" alt="ERPNext Logo" class="logo" 
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="fallback-logo" style="display: none;">ERP</div>
+        </div>
+        
+        <h2 class="title">Connexion à ERPNext</h2>
+        
+        <div th:if="${success}" class="message message-success" th:text="${success}"></div>
+        <div th:if="${error}" class="message message-error" th:text="${error}"></div>
+        
+        <form id="loginForm" class="form">
+            <div class="form-group">
+                <label for="usr" class="label">Nom d'utilisateur ou Email</label>
+                <input type="text" id="usr" name="usr" required class="input" 
+                       placeholder="Entrez votre nom d'utilisateur">
+            </div>
+            
+            <div class="form-group">
+                <label for="pwd" class="label">Mot de passe</label>
+                <input type="password" id="pwd" name="pwd" required class="input" 
+                       placeholder="Entrez votre mot de passe">
+            </div>
+            
+            <div id="error-message" class="message message-error hidden"></div>
+            
+            <button type="submit" class="btn">
+                <span>Se connecter</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const usr = document.getElementById('usr').value;
+            const pwd = document.getElementById('pwd').value;
+            const errorMessage = document.getElementById('error-message');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            errorMessage.classList.add('hidden');
+            
+            submitBtn.classList.add('loading');
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usr, pwd }),
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/api-docs';
+                } else {
+                    const data = await response.json();
+                    errorMessage.textContent = data.message || 'Identifiants incorrects';
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Erreur de connexion : ' + error.message;
+                errorMessage.classList.remove('hidden');
+            } finally {
+                submitBtn.classList.remove('loading');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('usr').focus();
+            
+            const inputs = document.querySelectorAll('.input');
+            const errorMessage = document.getElementById('error-message');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    errorMessage.classList.add('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
