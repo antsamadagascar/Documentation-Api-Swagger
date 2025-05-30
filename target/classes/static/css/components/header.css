@@ -1,0 +1,39 @@
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height);
+    background-color: var(--header-bg);
+    box-shadow: var(--shadow-sm);
+    z-index: var(--z-index-header);
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 var(--spacing-3);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    min-width: var(--sidebar-width);
+    padding-right: var(--spacing-3);
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    margin-right: var(--spacing-2);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    color: var(--text-primary);

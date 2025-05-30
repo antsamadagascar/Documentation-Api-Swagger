@@ -1,0 +1,104 @@
+/* Breakpoints */
+/* Extra small devices (phones, 576px and down) */
+/* Small devices (landscape phones, 576px and up) */
+/* Medium devices (tablets, 768px and up) */
+/* Large devices (desktops, 992px and up) */
+/* Extra large devices (large desktops, 1200px and up) */
+
+/* Responsive Mixins */
+@media (max-width: 576px) {
+    :root {
+        --sidebar-width: 100%;
+        --header-height: 3.5rem;
+    }
+    
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .main-container {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .content {
+        margin-left: 0 !important;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .page-actions {
+        margin-top: var(--spacing-2);
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-row .form-group {
+        width: 100% !important;
+    }
+    
+    .header-search {
+        display: none;
+    }
+    
+    .header-actions {
+        margin-left: auto;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .sidebar {
+        width: var(--sidebar-collapsed-width);
+    }
+    
+    .sidebar .sidebar-link span,
+    .sidebar .sidebar-footer-item span,
+    .sidebar .dropdown-icon {
+        display: none;
+    }
+    
+    .sidebar-submenu {
+        position: absolute;
+        left: var(--sidebar-collapsed-width);
+        top: 0;
+        width: 200px;
+        background-color: var(--sidebar-bg);
+        box-shadow: var(--shadow);
+        border-radius: var(--border-radius);
+        z-index: 100;
+        display: none;
+    }
+    
+    .sidebar-dropdown:hover .sidebar-submenu {
+        display: block;
+    }
+    
+    .logo-text {
+        display: none;
+    }
+    
+    .content {
+        margin-left: var(--sidebar-collapsed-width) !important;
+    }
+}
