@@ -4,6 +4,7 @@
 **/
 package com.example.demo.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.service.AuthService;
+import com.example.demo.service.ErpNextClientService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -25,6 +28,12 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    private final ErpNextClientService erpNextClient;
+
+    public AuthController(ErpNextClientService erpNextClient) {
+        this.erpNextClient = erpNextClient;
+    }
+    
     @GetMapping("/login")
     public String showLoginForm() {
         return "pages/auth/index";
@@ -91,6 +100,36 @@ public class AuthController {
             session.removeAttribute("frappe_sid");
             session.removeAttribute("user_full_name");
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+        }
+    }
+
+    @GetMapping("/api/auth/check")
+    public ResponseEntity<Map<String, Object>> checkAuth(HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            erpNextClient.getModules();
+            
+            response.put("authenticated", true);
+            response.put("message", "Authentification valide");
+            
+            String userInfo = "Utilisateur connecté";
+            response.put("user", userInfo);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("authenticated", false);
+            response.put("message", "Non authentifié: " + e.getMessage());
+            response.put("error", e.getMessage());
+            
+            response.put("debug", Map.of(
+                "cookies", request.getHeader("Cookie") != null ? "Présents" : "Absents",
+                "authHeader", request.getHeader("Authorization") != null ? "Présent" : "Absent",
+                "sessionId", request.getSession(false) != null ? "Présent" : "Absent"
+            ));
+            
+            return ResponseEntity.status(401).body(response);
         }
     }
 
