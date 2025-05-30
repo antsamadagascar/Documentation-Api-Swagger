@@ -9,7 +9,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,13 +31,13 @@ public class AuthController {
     }
 
     @PostMapping("/api/auth/login")
-    @ResponseBody
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials, HttpSession session) {
+    public String login(@RequestBody Map<String, String> credentials, HttpSession session, RedirectAttributes redirectAttributes) {
         String usr = credentials.get("usr");
         String pwd = credentials.get("pwd");
 
         if (usr == null || pwd == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Nom d'utilisateur et mot de passe requis"));
+            redirectAttributes.addFlashAttribute("error", "Nom d'utilisateur et mot de passe requis");
+            return "redirect:/login";
         }
 
         try {
@@ -46,14 +45,17 @@ public class AuthController {
             if (response.containsKey("sid")) {
                 session.setAttribute("frappe_sid", response.get("sid"));
                 session.setAttribute("user_full_name", response.get("full_name"));
-                return ResponseEntity.ok(Map.of("success", "Connexion réussie"));
+                return "redirect:/api-docs";
             } else {
-                return ResponseEntity.badRequest().body(Map.of("message", "Cookie d'authentification non trouvé"));
+                redirectAttributes.addFlashAttribute("error", "Cookie d'authentification non trouvé");
+                return "redirect:/login";
             }
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("message", "Erreur serveur : " + e.getMessage()));
+            redirectAttributes.addFlashAttribute("error", "Erreur serveur : " + e.getMessage());
+            return "redirect:/login";
         }
     }
+
 
     @PostMapping("/api/auth/logout")
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
@@ -92,11 +94,4 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/api-docs")
-    public String dashboard(HttpSession session, Model model) {
-        if (!authService.isAuthenticated(session)) {
-            return "redirect:/login";
-        }
-        return "pages/documentation/index"; 
-    }
 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
