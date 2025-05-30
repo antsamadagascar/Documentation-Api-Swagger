@@ -1,3 +1,6 @@
 /home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/DemoApplication.java
+/home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/config/AppConfig.java
 /home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/config/ThymeleafConfig.java
+/home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/controller/AuthController.java
 /home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/controller/HomeController.java
+/home/aina-ny-antsa/Documents/FIANARANA/Semestre6/Documentation-Api-Swagger/src/main/java/com/example/demo/service/AuthService.java
