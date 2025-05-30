@@ -1,0 +1,87 @@
+:root {
+    /* Couleurs principales */
+    --primary-color: #4a6cf7;
+    --primary-hover: #3451b2;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    
+    /* Couleurs neutres */
+    --black: #000;
+    --white: #fff;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-500: #adb5bd;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --gray-800: #343a40;
+    --gray-900: #212529;
+    
+    /* Couleurs de la marque */
+    --brand-primary: #4a6cf7;
+    --brand-secondary: #6c757d;
+    
+    /* Couleurs de background */
+    --body-bg: #f5f7fb;
+    --sidebar-bg: #fff;
+    --header-bg: #fff;
+    --card-bg: #fff;
+    --hover-bg: #f5f7fb;
+    --active-bg: #e9f0ff;
+    
+    /* Couleurs du texte */
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #8e9fad;
+    --text-light: #f8f9fa;
+    --text-dark: #343a40;
+    --text-link: #4a6cf7;
+    
+    /* Ombres */
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    --sidebar-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.05);
+    
+    /* Typographie */
+    --font-family: 'Roboto', sans-serif;
+    --font-size-base: 1rem;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    
+    /* Espacement */
+    --spacing-1: 0.25rem;
+    --spacing-2: 0.5rem;
+    --spacing-3: 1rem;
+    --spacing-4: 1.5rem;
+    --spacing-5: 3rem;
+    
+    /* Mise en page */
+    --header-height: 4rem;
+    --sidebar-width: 260px;
+    --sidebar-collapsed-width: 70px;
+    --footer-height: 3.5rem;
+    --border-radius: 0.25rem;
+    --border-radius-lg: 0.5rem;
+    --border-radius-sm: 0.2rem;
+    
+    /* Transitions */
+    --transition-base: all 0.2s ease-in-out;
+    --transition-slow: all 0.3s ease-in-out;
+    --transition-fast: all 0.1s ease-in-out;
+    
+    /* Z-index */
+    --z-index-header: 1000;
+    --z-index-sidebar: 900;
+    --z-index-dropdown: 1000;
+    --z-index-modal: 1050;
+    --z-index-tooltip: 1070;
+}

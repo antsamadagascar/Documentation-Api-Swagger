@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<!-- Inclusion du fragment head avec le titre passé en paramètre -->
+<head th:replace="~{fragments/head :: head(${pageTitle})}">
+    <title>Mon Application</title>
+</head>
+<body>
+    <!-- Inclusion du fragment header -->
+    <header th:replace="~{fragments/header :: header}"></header>
+    
+    <!-- Inclusion du fragment sidebar -->
+    <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="main-wrapper">
+            <!-- Le contenu de la page sera injecté ici -->
+            <div th:replace="${content}">
+                Contenu par défaut
+            </div>
+        </div>
+    </main>
+    
+    <!-- Inclusion du fragment footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    
+    <!-- Inclusion des scripts -->
+    <th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

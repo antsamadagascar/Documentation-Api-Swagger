@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="includes/head :: head"></th:block>
+
+<body>
+
+    <th:block th:replace="~{includes/head :: head}"></th:block>
+    <header th:replace="~{includes/header :: header}"></header>
+    <aside th:replace="~{includes/sidebar :: aside}"></aside>
+     <!-- Main Content -->
+     <main class="main-content">
+        <div class="main-wrapper">
+            <!-- Le contenu de la page sera injecté ici -->
+            <div th:replace="${content}">
+                Contenu par défaut
+            </div>
+        </div>
+    </main>
+ 
+    <footer th:replace="~{includes/footer :: footer}"></footer>
+    
+</body>
+</html>
