@@ -155,8 +155,14 @@
         <div class="header">
             <h1><i class="fas fa-cogs"></i> Documentation API ERPNext</h1>
             <p>Explorez et testez les APIs de vos modules ERPNext</p>
+            <div class="mt-3">
+                <form id="logoutForm" th:action="@{/api/auth/logout}" method="post">
+                    <button type="submit" class="btn btn-outline-light">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                </form>
+            </div>
         </div>
-
         <div class="stats-bar">
             <div class="stats-item">
                 <span class="stats-number" th:text="${#lists.size(modules)}">0</span>

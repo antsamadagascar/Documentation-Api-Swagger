@@ -48,10 +48,10 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("error", "Nom d'utilisateur et mot de passe requis");
             return "redirect:/login";
         }
-
+   
         try {
             Map<String, Object> response = authService.login(usr, pwd, session);
-            if (response.containsKey("sid")) {
+            if (response.containsKey("sid") && !authService.isAuthenticated(session)) {
                 session.setAttribute("frappe_sid", response.get("sid"));
                 session.setAttribute("user_full_name", response.get("full_name"));
                 return "redirect:/api-docs";
