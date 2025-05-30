@@ -9,29 +9,35 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.demo.service.AuthService;
 import com.example.demo.service.ErpNextClientService;
 import com.example.demo.service.OpenApiBuilderService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/api-docs")
 public class WebController {
-    
+
     private final ErpNextClientService erpNextClient;
     private final OpenApiBuilderService openApiBuilder;
-    
+    private final AuthService authService;
+
     @Value("${frappe.url}")
     private String baseUrl;
-    
-    public WebController(ErpNextClientService erpNextClient, OpenApiBuilderService openApiBuilder) {
+
+    public WebController(ErpNextClientService erpNextClient, OpenApiBuilderService openApiBuilder, AuthService authService) {
         this.erpNextClient = erpNextClient;
         this.openApiBuilder = openApiBuilder;
+        this.authService = authService;
     }
-    
-    /**
-     * Page d'accueil affichant tous les modules disponibles
-     */
+
     @GetMapping
-    public String listModules(Model model) {
+    public String listModules(Model model, HttpSession session) {
+        if (!authService.isAuthenticated(session)) {
+            return "redirect:/login";
+        }
+
         try {
             List<String> modules = erpNextClient.getModules();
             model.addAttribute("modules", modules);
@@ -43,12 +49,13 @@ public class WebController {
             return "error";
         }
     }
-    
-    /**
-     * Page de documentation Swagger pour un module spécifique
-     */
+
     @GetMapping("/module/{moduleName}")
-    public String moduleDocumentation(@PathVariable String moduleName, Model model) {
+    public String moduleDocumentation(@PathVariable String moduleName, Model model, HttpSession session) {
+        if (!authService.isAuthenticated(session)) {
+            return "redirect:/login";
+        }
+
         try {
             List<String> doctypes = erpNextClient.getDoctypesByModule(moduleName);
             model.addAttribute("moduleName", moduleName);
@@ -61,5 +68,4 @@ public class WebController {
             return "error";
         }
     }
-
 }
