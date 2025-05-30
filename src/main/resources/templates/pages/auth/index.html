@@ -11,14 +11,24 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            min-height: calc(100vh - 120px); /* Ajuste selon la hauteur du footer */
         }
 
         .login-container {
@@ -95,6 +105,7 @@
             border-color: #4f46e5;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
             transform: translateY(-1px);
+            background: #fafbff;
         }
 
         .btn {
@@ -165,6 +176,31 @@
             display: none;
         }
 
+        /* Footer fixé en bas */
+        .footer {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer p {
+            margin: 0.3rem 0;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #cce3ff;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #ffffff;
+        }
+
         @keyframes fadeIn {
             0% {
                 opacity: 0;
@@ -184,6 +220,14 @@
             
             .title {
                 font-size: 24px;
+            }
+
+            .footer {
+                padding: 1rem;
+            }
+
+            .footer p {
+                font-size: 12px;
             }
         }
 
@@ -217,11 +261,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Effet de focus amélioré */
-        .input:focus {
-            background: #fafbff;
-        }
-
         /* Style pour les navigateurs webkit (Chrome, Safari) */
         .input::-webkit-input-placeholder {
             color: #9ca3af;
@@ -247,38 +286,51 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo-container">
-            <img th:src="@{/logos/erpnext-logo.svg}" alt="ERPNext Logo" class="logo" 
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="fallback-logo" style="display: none;">ERP</div>
+    <div class="main-content">
+        <div class="login-container">
+            <div class="logo-container">
+                <img th:src="@{/logos/erpnext-logo.svg}" alt="ERPNext Logo" class="logo" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="fallback-logo" style="display: none;">ERP</div>
+            </div>
+            
+            <h2 class="title">Connexion à ERPNext</h2>
+            
+            <div th:if="${success}" class="message message-success" th:text="${success}"></div>
+            <div th:if="${error}" class="message message-error" th:text="${error}"></div>
+            
+            <form id="loginForm" class="form">
+                <div class="form-group">
+                    <label for="usr" class="label">Nom d'utilisateur ou Email</label>
+                    <input type="text" id="usr" name="usr" required class="input" 
+                           placeholder="Entrez votre nom d'utilisateur">
+                </div>
+                
+                <div class="form-group">
+                    <label for="pwd" class="label">Mot de passe</label>
+                    <input type="password" id="pwd" name="pwd" required class="input" 
+                           placeholder="Entrez votre mot de passe">
+                </div>
+                
+                <div id="error-message" class="message message-error hidden"></div>
+                
+                <button type="submit" class="btn">
+                    <span>Se connecter</span>
+                </button>
+            </form>
         </div>
-        
-        <h2 class="title">Connexion à ERPNext</h2>
-        
-        <div th:if="${success}" class="message message-success" th:text="${success}"></div>
-        <div th:if="${error}" class="message message-error" th:text="${error}"></div>
-        
-        <form id="loginForm" class="form">
-            <div class="form-group">
-                <label for="usr" class="label">Nom d'utilisateur ou Email</label>
-                <input type="text" id="usr" name="usr" required class="input" 
-                       placeholder="Entrez votre nom d'utilisateur">
-            </div>
-            
-            <div class="form-group">
-                <label for="pwd" class="label">Mot de passe</label>
-                <input type="password" id="pwd" name="pwd" required class="input" 
-                       placeholder="Entrez votre mot de passe">
-            </div>
-            
-            <div id="error-message" class="message message-error hidden"></div>
-            
-            <button type="submit" class="btn">
-                <span>Se connecter</span>
-            </button>
-        </form>
     </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 Tous droits réservés - RATOVONANDRASANA Aina Ny Antsa</p>
+        <p>Documentation développée pour l'intégration et le test des APIs ERPNext</p>
+        <p>
+            <a href="https://www.linkedin.com/in/aina-ny-antsa-ratovonandrasana" target="_blank">
+                Me contacter sur LinkedIn
+            </a>
+        </p>
+        <p>Contribuez ou suggérez des améliorations via votre équipe de développement</p>
+    </footer>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
