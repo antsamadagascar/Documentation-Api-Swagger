@@ -148,6 +148,16 @@
             border-color: rgba(255, 255, 255, 0.5);
             background: rgba(255, 255, 255, 0.15);
         }
+        footer a {
+            color: #cce3ff;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: #ffffff;
+        }
+
+
     </style>
 </head>
 <body>
@@ -155,8 +165,14 @@
         <div class="header">
             <h1><i class="fas fa-cogs"></i> Documentation API ERPNext</h1>
             <p>Explorez et testez les APIs de vos modules ERPNext</p>
+            <div class="mt-3">
+                <form id="logoutForm" th:action="@{/api/auth/logout}" method="post">
+                    <button type="submit" class="btn btn-outline-light">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                </form>
+            </div>
         </div>
-
         <div class="stats-bar">
             <div class="stats-item">
                 <span class="stats-number" th:text="${#lists.size(modules)}">0</span>
@@ -274,4 +290,16 @@
         document.head.appendChild(style);
     </script>
 </body>
+<footer style="text-align: center; padding: 1.5rem 1rem; color: white; background-color: rgba(0, 0, 0, 0.2); margin-top: 2rem;">
+    <p style="margin: 0.3rem 0;">&copy; 2025 Tous droits réservés - RATOVONANDRASANA Aina Ny Antsa</p>
+    <p style="margin: 0.3rem 0;">Documentation développée pour l’intégration et le test des APIs ERPNext</p>
+    <p style="margin: 0.3rem 0;">
+        <a href="https://www.linkedin.com/in/aina-ny-antsa-ratovonandrasana" target="_blank" style="color: #cce3ff; text-decoration: underline;">
+            Me contacter sur LinkedIn
+        </a>
+    </p>
+    <p style="margin: 0.3rem 0;">Contribuez ou suggérez des améliorations via votre équipe de développement</p>
+</footer>
+
+
 </html>

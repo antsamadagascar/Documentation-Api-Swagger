@@ -12,7 +12,7 @@ public class OpenApiBuilderService {
 
     private final ErpNextClientService client;
 
-    @Value("${server.port:8080}")  // Port de votre application Spring Boot
+    @Value("${server.port:8080}")
     private String serverPort;
 
     public OpenApiBuilderService(ErpNextClientService client) {
@@ -24,12 +24,12 @@ public class OpenApiBuilderService {
         openapi.put("openapi", "3.0.0");
         openapi.put("info", createApiInfo("ERPNext Dynamic API", "Documentation complète de l'API ERPNext"));
         
-        // CHANGEMENT IMPORTANT : Pointer vers votre serveur local au lieu d'ERPNext directement
         openapi.put("servers", List.of(
             Map.of("url", "http://localhost:" + serverPort + "/api", "description", "Serveur Spring Boot (Proxy)")
         ));
         
         openapi.put("security", List.of(Map.of("sessionAuth", List.of()), Map.of("bearerAuth", List.of())));
+        
         Map<String, Object> paths = new LinkedHashMap<>();
         List<String> modules = client.getModules();
         for (String module : modules) {
@@ -46,7 +46,6 @@ public class OpenApiBuilderService {
         openapi.put("openapi", "3.0.0");
         openapi.put("info", createApiInfo("ERPNext API - Module " + moduleName, "Documentation API pour le module " + moduleName));
         
-        // CHANGEMENT IMPORTANT : Pointer vers votre serveur local
         openapi.put("servers", List.of(
             Map.of("url", "http://localhost:" + serverPort + "/api", "description", "Serveur Spring Boot (Proxy)")
         ));
@@ -62,7 +61,13 @@ public class OpenApiBuilderService {
     private Map<String, Object> createApiInfo(String title, String description) {
         return Map.of(
             "title", title,
-            "description", description + " (via Proxy Spring Boot)",
+            "description", description + "\n\n" +
+                "⚠️ **Gestion des erreurs ERPNext** :\n" +
+                "- **ProgrammingError** : DocType inexistant → Vérifiez le nom dans ERPNext\n" +
+                "- **PermissionError** : Droits insuffisants → Vérifiez les permissions utilisateur\n" +
+                "- **AuthenticationError** : Session expirée → Reconnectez-vous\n" +
+                "- **ValidationError** : Données invalides → Vérifiez les champs obligatoires\n\n" +
+                "Les erreurs affichent le stack trace Python complet pour faciliter le debug.",
             "version", "1.0.0",
             "contact", Map.of("name", "Support API", "email", "antsamadagascar@gmail.com")
         );
@@ -70,12 +75,14 @@ public class OpenApiBuilderService {
 
     private void addModulePaths(Map<String, Object> paths, String module, List<String> doctypes) {
         for (String doctype : doctypes) {
-            String collectionPath = "/resource/" + doctype;  // Les chemins restent les mêmes
+            String collectionPath = "/resource/" + doctype;
             String itemPath = collectionPath + "/{id}";
+            
             paths.put(collectionPath, Map.of(
                 "get", createGetAllOperation(doctype),
                 "post", createPostOperation(doctype)
             ));
+            
             paths.put(itemPath, Map.of(
                 "get", createGetByIdOperation(doctype),
                 "put", createPutOperation(doctype),
@@ -87,7 +94,7 @@ public class OpenApiBuilderService {
     private Map<String, Object> createGetAllOperation(String doctype) {
         return Map.of(
             "summary", "Récupérer tous les " + doctype,
-            "description", "Retourne la liste de tous les éléments de type " + doctype + " (via proxy Spring Boot)",
+            "description", "Retourne la liste de tous les éléments de type " + doctype,
             "tags", List.of(doctype),
             "security", List.of(Map.of("sessionAuth", List.of()), Map.of("bearerAuth", List.of())),
             "parameters", List.of(
@@ -99,29 +106,16 @@ public class OpenApiBuilderService {
                     "schema", Map.of("type", "string")
                 )
             ),
-            "responses", Map.of(
-                "200", Map.of(
-                    "description", "Liste récupérée avec succès",
-                    "content", Map.of(
-                        "application/json", Map.of(
-                            "schema", Map.of(
-                                "type", "array",
-                                "items", Map.of("$ref", "#/components/schemas/GenericDocument")
-                            )
-                        )
-                    )
-                ),
-                "403", Map.of("description", "Accès refusé"),
-                "401", Map.of("description", "Non authentifié")
-            )
+            "responses", createStandardResponses()
         );
     }
 
     private Map<String, Object> createPostOperation(String doctype) {
         return Map.of(
             "summary", "Créer un nouveau " + doctype,
-            "description", "Crée un nouvel élément de type " + doctype + " (via proxy Spring Boot)",
+            "description", "Crée un nouvel élément de type " + doctype,
             "tags", List.of(doctype),
+            "security", List.of(Map.of("sessionAuth", List.of()), Map.of("bearerAuth", List.of())),
             "requestBody", Map.of(
                 "required", true,
                 "content", Map.of(
@@ -130,33 +124,27 @@ public class OpenApiBuilderService {
                     )
                 )
             ),
-            "responses", Map.of(
-                "201", Map.of("description", "Document créé avec succès"),
-                "400", Map.of("description", "Données invalides"),
-                "403", Map.of("description", "Accès refusé")
-            )
+            "responses", createStandardResponses()
         );
     }
 
     private Map<String, Object> createGetByIdOperation(String doctype) {
         return Map.of(
             "summary", "Récupérer un " + doctype + " par ID",
-            "description", "Retourne un élément spécifique de type " + doctype + " (via proxy Spring Boot)",
+            "description", "Retourne un élément spécifique de type " + doctype,
             "tags", List.of(doctype),
+            "security", List.of(Map.of("sessionAuth", List.of()), Map.of("bearerAuth", List.of())),
             "parameters", List.of(createPathParameter("id", "Identifiant de l'élément")),
-            "responses", Map.of(
-                "200", Map.of("description", "Document récupéré avec succès"),
-                "404", Map.of("description", "Document non trouvé"),
-                "403", Map.of("description", "Accès refusé")
-            )
+            "responses", createStandardResponses()
         );
     }
 
     private Map<String, Object> createPutOperation(String doctype) {
         return Map.of(
             "summary", "Mettre à jour un " + doctype,
-            "description", "Met à jour un élément existant de type " + doctype + " (via proxy Spring Boot)",
+            "description", "Met à jour un élément existant de type " + doctype,
             "tags", List.of(doctype),
+            "security", List.of(Map.of("sessionAuth", List.of()), Map.of("bearerAuth", List.of())),
             "parameters", List.of(createPathParameter("id", "Identifiant de l'élément à modifier")),
             "requestBody", Map.of(
                 "required", true,
@@ -166,24 +154,73 @@ public class OpenApiBuilderService {
                     )
                 )
             ),
-            "responses", Map.of(
-                "200", Map.of("description", "Document mis à jour avec succès"),
-                "404", Map.of("description", "Document non trouvé"),
-                "403", Map.of("description", "Accès refusé")
-            )
+            "responses", createStandardResponses()
         );
     }
 
     private Map<String, Object> createDeleteOperation(String doctype) {
         return Map.of(
             "summary", "Supprimer un " + doctype,
-            "description", "Supprime un élément de type " + doctype + " (via proxy Spring Boot)",
+            "description", "Supprime un élément de type " + doctype,
             "tags", List.of(doctype),
+            "security", List.of(Map.of("sessionAuth", List.of()), Map.of("bearerAuth", List.of())),
             "parameters", List.of(createPathParameter("id", "Identifiant de l'élément à supprimer")),
-            "responses", Map.of(
-                "204", Map.of("description", "Document supprimé avec succès"),
-                "404", Map.of("description", "Document non trouvé"),
-                "403", Map.of("description", "Accès refusé")
+            "responses", createStandardResponses()
+        );
+    }
+
+    private Map<String, Object> createStandardResponses() {
+        return Map.of(
+            "default", Map.of(
+                "description", "Réponse du serveur ERPNext",
+                "content", Map.of(
+                    "application/json", Map.of(
+                        "schema", Map.of(
+                            "oneOf", List.of(
+                                // Réponse de succès
+                                Map.of(
+                                    "type", "object",
+                                    "description", "Réponse de succès d'ERPNext"
+                                ),
+                                // Réponse d'erreur structurée
+                                Map.of("$ref", "#/components/schemas/ErpNextError")
+                            )
+                        ),
+                        "examples", Map.of(
+                            "success", Map.of(
+                                "summary", "Succès",
+                                "value", Map.of(
+                                    "data", List.of(
+                                        Map.of("name", "DOC-001", "creation", "2025-05-30")
+                                    )
+                                )
+                            ),
+                            "doctype_not_found", Map.of(
+                                "summary", "DocType inexistant",
+                                "value", Map.of(
+                                    "exception", "pymysql.err.ProgrammingError: ('DocType', 'Authorization Control')",
+                                    "exc_type", "ProgrammingError",
+                                    "message", "Le DocType 'Authorization Control' n'existe pas dans la base de données ERPNext",
+                                    "cause", "Table manquante ou DocType non installé"
+                                )
+                            ),
+                            "permission_error", Map.of(
+                                "summary", "Erreur de permission",
+                                "value", Map.of(
+                                    "exception", "frappe.exceptions.PermissionError",
+                                    "message", "Insufficient Permission for User"
+                                )
+                            ),
+                            "authentication_error", Map.of(
+                                "summary", "Erreur d'authentification",
+                                "value", Map.of(
+                                    "exception", "frappe.exceptions.AuthenticationError",
+                                    "message", "Not permitted"
+                                )
+                            )
+                        )
+                    )
+                )
             )
         );
     }
@@ -203,20 +240,79 @@ public class OpenApiBuilderService {
             "schemas", Map.of(
                 "GenericDocument", Map.of(
                     "type", "object",
+                    "description", "Document ERPNext générique",
                     "properties", Map.of(
                         "name", Map.of("type", "string", "description", "Nom/ID du document"),
                         "creation", Map.of("type", "string", "format", "date-time", "description", "Date de création"),
                         "modified", Map.of("type", "string", "format", "date-time", "description", "Date de modification"),
                         "owner", Map.of("type", "string", "description", "Propriétaire du document"),
-                        "docstatus", Map.of("type", "integer", "description", "Statut du document")
+                        "docstatus", Map.of("type", "integer", "description", "Statut du document (0=Draft, 1=Submitted, 2=Cancelled)")
+                    ),
+                    "additionalProperties", true
+                ),
+                "ErpNextError", Map.of(
+                    "type", "object",
+                    "description", "Structure d'erreur ERPNext avec explications détaillées",
+                    "properties", Map.of(
+                        "exception", Map.of(
+                            "type", "string", 
+                            "description", "Type d'exception Python",
+                            "examples", List.of(
+                                "pymysql.err.ProgrammingError: ('DocType', 'Authorization Control')",
+                                "frappe.exceptions.PermissionError",
+                                "frappe.exceptions.ValidationError"
+                            )
+                        ),
+                        "exc_type", Map.of(
+                            "type", "string", 
+                            "description", "Type d'exception court",
+                            "enum", List.of("ProgrammingError", "PermissionError", "ValidationError", "AuthenticationError")
+                        ),
+                        "exc", Map.of(
+                            "type", "array",
+                            "description", "Stack trace complet de l'erreur Python",
+                            "items", Map.of("type", "string")
+                        ),
+                        "message", Map.of(
+                            "type", "string",
+                            "description", "Message d'erreur explicite"
+                        )
+                    ),
+                    "examples", List.of(
+                        Map.of(
+                            "name", "DocType inexistant",
+                            "value", Map.of(
+                                "exception", "pymysql.err.ProgrammingError: ('DocType', 'Authorization Control')",
+                                "exc_type", "ProgrammingError",
+                                "message", "Le DocType 'Authorization Control' n'existe pas dans ERPNext. Causes possibles :\n- DocType supprimé ou renommé\n- Module non installé\n- Erreur de frappe dans le nom"
+                            )
+                        )
                     )
                 ),
-                "Error", Map.of(
+                "CommonErrors", Map.of(
                     "type", "object",
+                    "description", "Guide des erreurs ERPNext les plus courantes",
                     "properties", Map.of(
-                        "message", Map.of("type", "string", "description", "Message d'erreur"),
-                        "error_code", Map.of("type", "string", "description", "Code d'erreur"),
-                        "timestamp", Map.of("type", "string", "format", "date-time", "description", "Horodatage de l'erreur")
+                        "ProgrammingError", Map.of(
+                            "type", "string",
+                            "description", "DocType inexistant ou table manquante",
+                            "example", "Vérifiez que le DocType existe dans ERPNext > Developer > DocType"
+                        ),
+                        "PermissionError", Map.of(
+                            "type", "string", 
+                            "description", "Utilisateur sans droits suffisants",
+                            "example", "Vérifiez les permissions dans ERPNext > Users and Permissions > Role Permissions Manager"
+                        ),
+                        "AuthenticationError", Map.of(
+                            "type", "string",
+                            "description", "Session expirée ou token invalide", 
+                            "example", "Reconnectez-vous ou générez un nouveau token API"
+                        ),
+                        "ValidationError", Map.of(
+                            "type", "string",
+                            "description", "Données invalides selon les règles ERPNext",
+                            "example", "Vérifiez les champs obligatoires et les formats de données"
+                        )
                     )
                 )
             ),
@@ -225,12 +321,12 @@ public class OpenApiBuilderService {
                     "type", "apiKey",
                     "in", "cookie",
                     "name", "sid",
-                    "description", "Cookie de session ERPNext (format: sid=votre_session_id) - Géré automatiquement via le proxy"
+                    "description", "Cookie de session ERPNext"
                 ),
                 "bearerAuth", Map.of(
                     "type", "http",
                     "scheme", "bearer",
-                    "description", "Token d'authentification ERPNext - Géré automatiquement via le proxy"
+                    "description", "Token d'authentification ERPNext"
                 )
             )
         );
